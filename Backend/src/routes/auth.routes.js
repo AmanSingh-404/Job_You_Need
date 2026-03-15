@@ -8,8 +8,6 @@ const authRouter = Router()
  * @access Public
 */
 
-authRouter.post("/register", (req, res) => {
-     
-})
+authRouter.post("/register", )
 
 module.exports = authRouter
