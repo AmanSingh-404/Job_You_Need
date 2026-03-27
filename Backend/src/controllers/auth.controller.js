@@ -1,6 +1,6 @@
 const userModel = require("../models/user.model")
 const jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcrypt")
 const blacklistModel = require("../models/blacklist.model") 
 
 /**
@@ -19,7 +19,7 @@ async function registerUser(req, res) {
     })
    }
 
-   const isUserAlreadyExists = userModel.findOne({
+   const isUserAlreadyExists = await userModel.findOne({
     $or: [{username}, {email}]
    })
    if(isUserAlreadyExists){
@@ -30,10 +30,10 @@ async function registerUser(req, res) {
 
    const hashPassword = await bcrypt.hash(password, 10);
 
-   const user = userModel.create({
+   const user = await userModel.create({
     username,
     email,
-    password: hash
+    password: hashPassword
    })
 
    const token = jwt.sign({id: user._id, username: user.username},
