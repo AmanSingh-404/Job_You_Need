@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css';
+import illustration from '../assets/secure-login.png';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -9,6 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   const navigate = useNavigate();
 
@@ -18,16 +20,12 @@ const Register = () => {
     setError('');
     
     try {
-      // Backend expects username, email, and password
       const response = await axios.post('/api/auth/register', {
         username,
         email,
         password
       });
-      
       console.log('Registration successful', response.data);
-      
-      // Navigate to login page
       navigate('/login');
     } catch (err) {
       console.error('Registration error', err);
@@ -38,60 +36,82 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>Create Account</h1>
-          <p>Sign up to get started</p>
+    <div className="auth-wrapper">
+      <div className="auth-container">
+        {/* Left Side (Form) */}
+        <div className="auth-left">
+          <div className="auth-header">
+            <h1>Join us!</h1>
+            <p>
+              Create your account to start building your career<br/>
+              with <strong>Job You Need</strong>.
+            </p>
+          </div>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <form className="auth-form" onSubmit={handleRegister}>
+            <div className="input-container">
+              <input 
+                type="text" 
+                className="auth-input"
+                placeholder="Username" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required 
+              />
+            </div>
+
+            <div className="input-container">
+              <input 
+                type="email" 
+                className="auth-input"
+                placeholder="Email address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required 
+              />
+            </div>
+            
+            <div className="input-container">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                className="auth-input"
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required 
+              />
+              <button 
+                type="button" 
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                )}
+              </button>
+            </div>
+            
+            <button type="submit" className="auth-btn" disabled={isLoading} style={{ marginTop: '1.25rem' }}>
+              {isLoading ? <div className="loader"></div> : 'Register'}
+            </button>
+          </form>
+          
+          <div className="auth-footer">
+            Already a member? <Link to="/login" className="auth-link">Sign In</Link>
+          </div>
         </div>
         
-        {error && <div className="error-message">{error}</div>}
-        
-        <form className="auth-form" onSubmit={handleRegister}>
-          <div className="input-group">
-            <label htmlFor="username">Username</label>
-            <input 
-              type="text" 
-              id="username" 
-              placeholder="Choose a username" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required 
-            />
-          </div>
-          
-          <div className="input-group">
-            <label htmlFor="email">Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              placeholder="Enter your email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
-            />
-          </div>
-          
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              placeholder="Create a password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required 
-            />
-          </div>
-          
-          <button type="submit" className="auth-btn" disabled={isLoading}>
-            {isLoading ? <div className="loader"></div> : 'Sign Up'}
-          </button>
-        </form>
-        
-        <div className="auth-footer">
-          Already have an account? 
-          <Link to="/login" className="auth-link">Sign In</Link>
+        {/* Right Side (Illustration) */}
+        <div className="auth-right">
+          <img src={illustration} alt="Tuga's App Illustration" />
+          <h2>
+            Build your career and boost your growth with <strong>Job You Need</strong>
+          </h2>
         </div>
       </div>
     </div>
