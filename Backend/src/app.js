@@ -46,7 +46,7 @@ app.get('/auth/google/callback',
       { expiresIn: '1h' }
     );
 
-    res.json({ token });
+    res.redirect(`http://localhost:5173/login?token=${token}`);
   }
 );
 
