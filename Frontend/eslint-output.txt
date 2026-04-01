@@ -1,0 +1,6 @@
+
+C:\Users\Aman\OneDrive\Desktop\Job-You-Need\Frontend\src\features\auth\auth.context.js
+  5:14  error  Parsing error: Identifier 'AuthContext' has already been declared
+
+✖ 1 problem (1 error, 0 warnings)
+
