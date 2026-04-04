@@ -1,28 +1,52 @@
-const pdfParse = require("pdf-parse")
-const { generateInterviewReport } = require("../services/ai.services")
-const InterviewReportModel = require("../models/interview.model")
+const pdfParse = require("pdf-parse");
+const { generateInterviewReport } = require("../services/ai.services");
+const InterviewReportModel = require("../models/InterviewReport.model");
 
-async function genrateInterviewReportController(req, res) {
-    const resumeFile = req.file
+async function generateInterviewReportController(req, res) {
+    try {
+        // 1. Validate file
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Resume file is required"
+            });
+        }
 
-    const resumeContent = pdfParse(req.file.buffer)
-    const {selfDescription, jobDescription} = req.body
+        // 2. Parse PDF
+        const resumeContent = await (new pdfParse.PDFParse(Uint*Array.from(req.file.buffer))).getText()
+        const { selfDescription, jobDescription } = req.body;
 
-    const interviewReportByAi = await generateInterviewReport({resumeContent, selfDescription, jobDescription})
+        // 3. Call AI service
+        const interviewReportByAi = await generateInterviewReport({
+            resumeContent,
+            selfDescription,
+            jobDescription
+        });
 
-    const interviewReport = await InterviewReportModel.create({
-        user: req.user.id,
-        resume: resumeFile.buffer,
-        selfDescription,
-        jobDescription,
-        technicalQuestions: interviewReportByAi.technicalQuestions
-    })
+        // 4. Save to DB
+        const interviewReport = await InterviewReportModel.create({
+            user: req.user?.id, // safer
+            resumeText: resumeContent.text,
+            selfDescription,
+            jobDescription,
+            technicalQuestions: interviewReportByAi.technicalQuestions
+        });
 
-    res.status(200).json({
-        success: true,
-        message: "Interview report generated successfully",
-        interviewReport
-    })
+        // 5. Response
+        res.status(200).json({
+            success: true,
+            message: "Interview report generated successfully",
+            interviewReport
+        });
+
+    } catch (error) {
+        console.error("Error generating report:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
 }
 
-module.exports = { genrateInterviewReportController }
+module.exports = { generateInterviewReport: generateInterviewReportController };
