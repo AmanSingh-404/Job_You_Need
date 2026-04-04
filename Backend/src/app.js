@@ -9,6 +9,7 @@ const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
 
 // routes
 const authRouter = require('./routes/auth.routes');
+const interviewRouter = require('./routes/interview.routes');
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.get('/auth/google/callback',
 
 // ================= YOUR ROUTES =================
 app.use('/api/auth', authRouter);
+app.use('/api/interview', interviewRouter);
 
 // export app
 module.exports = app;
