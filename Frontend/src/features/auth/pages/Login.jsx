@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css';
 import illustration from '../../../assets/secure-login.png';
-import { useAuth } from '../hooks/use.auth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,9 +10,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const {loading, handleLogin} = useAuth();
-  const {email, setEmail} = useState('');
-  const {password, setPassword} = useState('');
 
   const navigate = useNavigate();
 
