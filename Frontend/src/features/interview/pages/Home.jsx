@@ -28,6 +28,16 @@ const Home = () => {
         }
     }
 
+    if(loading){
+        return(
+            <main className="min-h-screen bg-[#f8fafc] text-[#111827] font-sans flex flex-col relative w-full overflow-x-hidden">
+                <div className="w-16 h-16 border-4 border-[#d1d5db] border-t-[#4ade80] rounded-full animate-spin mb-6"></div>
+                <h1 className="text-xl font-bold text-[#111827] tracking-tight">Gathering insights...</h1>
+                <p className="text-[#6b7280] mt-2 text-sm">Please wait while we load your tailored interview plan.</p>
+            </main>
+        )
+    }
+
     return (
         <main className="min-h-screen bg-[#f8fafc] text-[#111827] font-sans flex flex-col relative w-full overflow-x-hidden">
             {/* Simple Header */}

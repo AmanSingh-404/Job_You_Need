@@ -6,6 +6,7 @@ import './App.css';
 import { AuthProvider } from './features/auth/auth.context';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './features/interview/pages/Home';
+import Interview from './features/interview/pages/Interview';
 import { InterviewProvider } from './features/interview/interview.context';
 
 function App() {
@@ -21,6 +22,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/interview/:interviewId"
+            element={
+              <ProtectedRoute>
+                <Interview />
               </ProtectedRoute>
             }
           />

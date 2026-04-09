@@ -1,4 +1,4 @@
-import {getAllInterviewReports, getInterviewReportById, generateInterviewReport} from "../services/interview.service";
+import {getAllInterviewReports, getInterviewReportById, generateInterviewReport} from "../services/interview.api";
 import { useContext } from "react";
 import { InterviewContext } from "../interview.context";
 
@@ -10,11 +10,12 @@ export const useInterview = () => {
     
     const {loading, setLoading, report, setReport, reports, setReports} = context;
 
-    const genrateReport = async({jobDescription. selfDescription, resumeFile}) => {
+    const genrateReport = async({jobDescription, selfDescription, resumeFile}) => {
         setLoading(true)
         try{
-            const response = await generateInterviewReport({jobDescription, selfDescription, resumeFile})
+            const response = await generateInterviewReport({jobDescription, selfDescription, resume: resumeFile})
             setReport(response.interviewReport)
+            return response.interviewReport
         }catch(error){
             console.log(error)
         }finally{
@@ -22,7 +23,7 @@ export const useInterview = () => {
         }
     }
 
-    const getReportById = async (interviewReport)=> {
+    const getReportById = async (interviewId)=> {
         setLoading(true)
         try{
             const response = await getInterviewReportById(interviewId)
@@ -32,7 +33,6 @@ export const useInterview = () => {
         }finally{
             setLoading(false)
         }
-
     }
 
     const getReports = async()=>{
@@ -47,13 +47,17 @@ export const useInterview = () => {
         }
     }
 
+    const getResumePdf = () => {
+        alert("Resume download not implemented yet.");
+    }
+
     return {
         loading,
         report,
         reports,
         genrateReport,
         getReportById,
-        getReports
+        getReports,
+        getResumePdf
     }
-    
 }

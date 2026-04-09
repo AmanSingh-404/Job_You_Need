@@ -12,8 +12,7 @@ async function generateInterviewReportController(req, res) {
             });
         }
 
-        // 2. Parse PDF
-        const resumeContent = await (new pdfParse.PDFParse(Uint*Array.from(req.file.buffer))).getText()
+        const resumeContent = await pdfParse(req.file.buffer);
         const { selfDescription, jobDescription } = req.body;
 
         // 3. Call AI service
@@ -90,4 +89,8 @@ async function getAllInterviewReportsController(req, res) {
     }
 }
 
-module.exports = { generateInterviewReport: generateInterviewReportController, getAllInterviewReportsController};
+module.exports = { 
+    generateInterviewReport: generateInterviewReportController, 
+    getAllInterviewReports: getAllInterviewReportsController,
+    getInterviewReport: getInterviewReportByIdController
+};
