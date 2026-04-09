@@ -1,8 +1,32 @@
-import React from 'react';
+import React,{useState, useRef} from 'react';
 import { useAuth } from '../../auth/hooks/use.auth';
+import {useInterview} from '../hooks/useinterview'
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const { user, handleLogout } = useAuth();
+    const {loading, genrateReport} = useInterview()
+    const [jobDescription, setJobDescription] = useState("")
+    const [selfDescription, setSelfDescription] = useState("")
+    const resumeInputRef = useRef()
+
+    const navigate = useNavigate()
+
+    const handleGenrateReport = async ()=> {
+        const resumeFile = resumeInputRef.current.files[0]
+        if(!resumeFile){
+            alert("Please upload resume")
+            return
+        }
+        if(!jobDescription || !selfDescription){
+            alert("Please fill all the fields")
+            return
+        }
+        const data =  await genrateReport({jobDescription, selfDescription, resumeFile})
+        if(data){
+            navigate(`/interview/${data._id}`)
+        }
+    }
 
     return (
         <main className="min-h-screen bg-[#f8fafc] text-[#111827] font-sans flex flex-col relative w-full overflow-x-hidden">
@@ -46,6 +70,7 @@ const Home = () => {
                                 Job Description
                             </label>
                             <textarea 
+                                onChange={(e)=>{setJobDescription(e.target.value)}}
                                 name="jobDescription" 
                                 id="jobDescription" 
                                 className="w-full flex-grow p-5 bg-[#f8fafc] border border-[#d1d5db] rounded-[16px] text-[#111827] placeholder-[#9ca3af] focus:outline-none focus:border-black transition-colors resize-none min-h-[300px]"
@@ -80,7 +105,7 @@ const Home = () => {
                                         </svg>
                                         <p className="mb-1 text-sm text-[#6b7280] group-hover/upload:text-black transition-colors"><strong className="text-[#4ade80] font-semibold">Click to browse</strong> or drag and drop</p>
                                     </div>
-                                    <input type="file" name="resume" id="resume" accept=".pdf" className="hidden" />
+                                    <input ref={resumeInputRef} type="file" name="resume" id="resume" accept=".pdf" className="hidden" />
                                 </label>
                             </div>
                         </div>
@@ -90,6 +115,7 @@ const Home = () => {
                                 Self Description
                             </label>
                             <textarea 
+                                onChange={(e)=> setSelfDescription(e.target.value)}
                                 name="selfDescription" 
                                 id="selfDescription" 
                                 className="w-full flex-grow p-5 bg-white border border-[#d1d5db] rounded-[16px] text-[#111827] placeholder-[#9ca3af] focus:outline-none focus:border-black transition-colors resize-none min-h-[140px] shadow-sm"
@@ -97,7 +123,10 @@ const Home = () => {
                             ></textarea>
                         </div>
 
-                        <button className="w-full py-4 px-6 font-semibold text-white rounded-full bg-black hover:bg-[#1f2937] transition-colors flex items-center justify-center gap-3 shadow-md active:scale-[0.99] text-[1.05rem]">
+                        <button
+                        onClick={handleGenrateReport}
+                        disabled={loading}
+                         className="w-full py-4 px-6 font-semibold text-white rounded-full bg-black hover:bg-[#1f2937] transition-colors flex items-center justify-center gap-3 shadow-md active:scale-[0.99] text-[1.05rem]">
                             <span>Generate Interview Report</span>
                             <svg className="w-5 h-5 text-[#4ade80]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </button>

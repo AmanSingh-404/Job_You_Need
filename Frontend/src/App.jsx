@@ -6,11 +6,13 @@ import './App.css';
 import { AuthProvider } from './features/auth/auth.context';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './features/interview/pages/Home';
+import { InterviewProvider } from './features/interview/interview.context';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <InterviewProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -23,6 +25,7 @@ function App() {
             }
           />
         </Routes>
+        </InterviewProvider>
       </AuthProvider>
     </BrowserRouter>
   );

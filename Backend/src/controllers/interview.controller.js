@@ -49,4 +49,45 @@ async function generateInterviewReportController(req, res) {
     }
 }
 
-module.exports = { generateInterviewReport: generateInterviewReportController };
+async function getInterviewReportByIdController(req, res) {
+    try {
+        const { interviewId } = req.params;
+        const interviewReport = await InterviewReportModel.findById({_id:interviewId, user: req.user.id});
+        if (!interviewReport) {
+            return res.status(404).json({
+                success: false,
+                message: "Interview report not found"
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Interview report fetched successfully",
+            interviewReport
+        });
+    } catch (error) {
+        console.error("Error fetching interview report:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+async function getAllInterviewReportsController(req, res) {
+    try {
+        const interviewReports = await InterviewReportModel.find({user: req.user.id}).sort({createdAt: -1}).select("-resume -jobDescription -selfDescription -technicalQuestions -behavioralQuestions -skillsGaps -preparationPlan");
+        res.status(200).json({
+            success: true,
+            message: "Interview reports fetched successfully",
+            interviewReports
+        });
+    } catch (error) {
+        console.error("Error fetching interview reports:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+module.exports = { generateInterviewReport: generateInterviewReportController, getAllInterviewReportsController};
