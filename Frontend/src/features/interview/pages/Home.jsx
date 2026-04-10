@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const { user, handleLogout } = useAuth();
-    const {loading, genrateReport} = useInterview()
+    const {loading, genrateReport, reports} = useInterview()
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const resumeInputRef = useRef()
@@ -143,6 +143,44 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+
+             {/* Recent Reports List */}
+            {reports && reports.length > 0 && (
+                <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 mt-4 mb-16 z-10 relative">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="p-2.5 bg-[#4ade80]/15 rounded-xl text-[#22c55e]">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-black tracking-tight">Recent Interview Plans</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {reports.map(report => (
+                            <div 
+                                key={report._id} 
+                                onClick={() => navigate(`/interview/${report._id}`)}
+                                className="group bg-white border border-[#d1d5db] rounded-[20px] p-6 shadow-sm hover:shadow-lg hover:border-[#4ade80] transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                            >
+                                <div>
+                                    <h3 className="text-lg font-bold text-[#111827] line-clamp-2 group-hover:text-[#22c55e] transition-colors">{report.title || 'Untitled Position'}</h3>
+                                    <p className="text-sm text-[#6b7280] mt-2 font-medium">Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <div className="mt-6 flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs uppercase tracking-widest text-[#9ca3af] font-bold mb-1">Match Score</span>
+                                        <span className={`text-xl font-black ${report.matchScore >= 80 ? 'text-[#22c55e]' : report.matchScore >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
+                                            {report.matchScore}%
+                                        </span>
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-[#f8fafc] border border-[#d1d5db] flex items-center justify-center group-hover:bg-[#4ade80] group-hover:border-[#4ade80] group-hover:text-white transition-all duration-300 transform group-hover:translate-x-1">
+                                        <svg className="w-5 h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </main>
     )
 }
