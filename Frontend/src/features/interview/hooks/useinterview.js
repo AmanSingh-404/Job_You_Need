@@ -1,9 +1,11 @@
 import {getAllInterviewReports, getInterviewReportById, generateInterviewReport} from "../services/interview.api";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { InterviewContext } from "../interview.context";
+import { useParams } from "react-router-dom";
 
 export const useInterview = () => {
     const context = useContext(InterviewContext);
+    const {interviewId} = useParams()
     if(!context) {
         throw new Error("useInterview must be used within InterviewProvider");
     }
@@ -12,44 +14,57 @@ export const useInterview = () => {
 
     const genrateReport = async({jobDescription, selfDescription, resumeFile}) => {
         setLoading(true)
+        let response = null
         try{
-            const response = await generateInterviewReport({jobDescription, selfDescription, resume: resumeFile})
+            response = await generateInterviewReport({jobDescription, selfDescription, resume: resumeFile})
             setReport(response.interviewReport)
-            return response.interviewReport
         }catch(error){
             console.log(error)
         }finally{
             setLoading(false)
         }
+        return response?.interviewReport
     }
 
     const getReportById = async (interviewId)=> {
         setLoading(true)
+        let response = null
         try{
-            const response = await getInterviewReportById(interviewId)
+            response = await getInterviewReportById(interviewId)
             setReport(response.interviewReport)
         }catch(error){
             console.log(error)
         }finally{
             setLoading(false)
         }
+        return response?.interviewReport
     }
 
     const getReports = async()=>{
         setLoading(true)
+        let response = null
         try{
-            const response = await getAllInterviewReports()
+            response = await getAllInterviewReports()
             setReports(response.interviewReports)
         }catch(error){
             console.log(error)
         }finally{
             setLoading(false)
         }
+        return response?.interviewReports
     }
 
     const getResumePdf = () => {
         alert("Resume download not implemented yet.");
     }
+
+    useEffect(() => {
+        if(interviewId){
+            getReportById(interviewId)
+        }else{
+            getReports()
+        }
+    }, [interviewId])
 
     return {
         loading,

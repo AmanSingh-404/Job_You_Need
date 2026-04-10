@@ -37,7 +37,7 @@ export const useAuth = () => {
         }
        }
        getAndSetuser()
-    }, [])
+    }, [setUser])
     // const handleMe = async () => {
     //     setLoading(true)
     //     const data = await me()

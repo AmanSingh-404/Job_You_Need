@@ -35,7 +35,7 @@ const Register = () => {
         username,
         email,
         password
-      });
+      }, { withCredentials: true });
       console.log('Registration successful', response.data);
       navigate('/login');
     } catch (err) {

@@ -1,4 +1,4 @@
-const pdfParse = require("pdf-parse");
+const pdfParse = require('pdf-parse');
 const { generateInterviewReport } = require("../services/ai.services");
 const InterviewReportModel = require("../models/InterviewReport.model");
 
@@ -17,7 +17,7 @@ async function generateInterviewReportController(req, res) {
 
         // 3. Call AI service
         const interviewReportByAi = await generateInterviewReport({
-            resumeContent,
+            resume: resumeContent.text,
             selfDescription,
             jobDescription
         });
@@ -28,7 +28,12 @@ async function generateInterviewReportController(req, res) {
             resumeText: resumeContent.text,
             selfDescription,
             jobDescription,
-            technicalQuestions: interviewReportByAi.technicalQuestions
+            title: interviewReportByAi.title || "Interview Report",
+            matchScore: interviewReportByAi.matchScore,
+            technicalQuestions: interviewReportByAi.technicalQuestions,
+            behavioralQuestions: interviewReportByAi.behavioralQuestions,
+            skillsGaps: interviewReportByAi.skillsGaps,
+            preparationPlan: interviewReportByAi.preparationPlan
         });
 
         // 5. Response
@@ -51,7 +56,7 @@ async function generateInterviewReportController(req, res) {
 async function getInterviewReportByIdController(req, res) {
     try {
         const { interviewId } = req.params;
-        const interviewReport = await InterviewReportModel.findById({_id:interviewId, user: req.user.id});
+        const interviewReport = await InterviewReportModel.findOne({_id:interviewId, user: req.user.id});
         if (!interviewReport) {
             return res.status(404).json({
                 success: false,

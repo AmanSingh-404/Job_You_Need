@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../auth.context';
+import { useContext } from 'react';
 import './Auth.css';
 import illustration from '../../../assets/secure-login.png';
 
@@ -10,6 +12,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { setUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -33,8 +36,9 @@ const Login = () => {
       const response = await axios.post('/api/auth/login', {
         email,
         password
-      });
+      }, { withCredentials: true });
       console.log('Login successful', response.data);
+      setUser(response.data.user);
       navigate('/');
     } catch (err) {
       console.error('Login error', err);
