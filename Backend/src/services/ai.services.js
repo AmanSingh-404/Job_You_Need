@@ -37,18 +37,57 @@ const interviewReportSchema = z.object({
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
 
-    const prompt = `Generate an interview report for a candidate with the following details:
-                        Resume: ${resume}
-                        Self Description: ${selfDescription}
-                        Job Description: ${jobDescription}
+    const prompt = `Generate an interview report for a candidate based on the details below.
+Return ONLY a valid JSON object. Do NOT wrap it in markdown blockquotes. The JSON must strictly adhere to the following structure and contain populated arrays (do not return empty arrays):
+
+{
+    "matchScore": <number between 0-100 indicating match>,
+    "technicalQuestions": [
+        {
+            "question": "<technical question 1>",
+            "intention": "<intention behind the question>",
+            "answer": "<ideal answer guidelines>"
+        },
+        ... (generate at least 5 technical questions)
+    ],
+    "behavioralQuestions": [
+        {
+            "question": "<behavioral question 1>",
+            "intention": "<intention behind the question>",
+            "answer": "<ideal answer guidelines>"
+        },
+        ... (generate at least 3 behavioral questions)
+    ],
+    "skillsGaps": [
+        {
+            "skill": "<missing skill>",
+            "severity": "<low|medium|high>",
+            "gap": "<why this is a gap>",
+            "improvement": "<how to improve>"
+        }
+    ],
+    "preparationPlan": [
+        {
+            "day": 1,
+            "focus": "<day 1 focus>",
+            "tasks": ["<task 1>", "<task 2>"]
+        },
+        ... (generate at least a 3-5 day preparation plan)
+    ],
+    "title": "<A concise job title for this report>"
+}
+
+Candidate Details:
+Resume: ${resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
 `
 
     const response = await ai.models.generateContent({
-        model: "gemini-flash-latest",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(interviewReportSchema),
         }
     })
 
@@ -98,7 +137,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                     `
 
     const response = await ai.models.generateContent({
-        model: "gemini-flash-latest",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",

@@ -29,11 +29,11 @@ async function generateInterviewReportController(req, res) {
             selfDescription,
             jobDescription,
             title: interviewReportByAi.title || "Interview Report",
-            matchScore: interviewReportByAi.matchScore,
-            technicalQuestions: interviewReportByAi.technicalQuestions,
-            behavioralQuestions: interviewReportByAi.behavioralQuestions,
-            skillsGaps: interviewReportByAi.skillsGaps,
-            preparationPlan: interviewReportByAi.preparationPlan
+            matchScore: interviewReportByAi.matchScore || 0,
+            technicalQuestions: interviewReportByAi.technicalQuestions || [],
+            behavioralQuestions: interviewReportByAi.behavioralQuestions || [],
+            skillsGaps: interviewReportByAi.skillsGaps || [],
+            preparationPlan: interviewReportByAi.preparationPlan || []
         });
 
         // 5. Response
@@ -94,8 +94,53 @@ async function getAllInterviewReportsController(req, res) {
     }
 }
 
+/**
+ * @description controller to genrate resume PDF based on user self description, resume and job description
+*/
+async function generateResumePdfController(req, res) {
+    try {
+        const { interviewId } = req.params;
+        const interviewReport = await InterviewReportModel.findOne({_id:interviewId, user: req.user.id});
+
+        if (!interviewReport) {
+            return res.status(404).json({
+                success: false,
+                message: "Interview report not found"
+            });
+        }
+
+        const { resumeText, selfDescription, jobDescription } = interviewReport;
+
+        // 2. Call AI service to generate resume PDF
+        const pdfBuffer = await generateResumePdf({
+            resume: resumeText,
+            selfDescription,
+            jobDescription
+        });
+
+        // 3. Set headers for PDF download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=resume.pdf');
+        res.setHeader('Content-Length', pdfBuffer.length);
+
+        // 4. Send the PDF buffer
+        res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error("Error generating resume PDF:", error);
+
+        if (!res.headersSent) {
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error"
+            });
+        }
+    }
+}
+
 module.exports = { 
     generateInterviewReport: generateInterviewReportController, 
     getAllInterviewReports: getAllInterviewReportsController,
-    getInterviewReport: getInterviewReportByIdController
+    getInterviewReport: getInterviewReportByIdController,
+    generateResumePdf: generateResumePdfController
 };

@@ -65,11 +65,7 @@ const Interview = () => {
     const { user, handleLogout } = useAuth()
     const navigate = useNavigate()
 
-    useEffect(() => {
-        if (interviewId) {
-            getReportById(interviewId)
-        }
-    }, [ interviewId, getReportById ])
+    // Data is fetched automatically by useInterview hook based on URL params
 
     if (loading || !report) {
         return (
@@ -147,10 +143,10 @@ const Interview = () => {
                         <section className="animate-fadeIn">
                             <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-6 border-b border-[#f1f5f9] gap-4'>
                                 <h2 className="text-2xl sm:text-3xl font-bold text-black tracking-tight">Technical Questions</h2>
-                                <span className='px-4 py-1.5 bg-[#f8fafc] border border-[#d1d5db] text-[#6b7280] text-sm font-bold rounded-full w-max'>{report.technicalQuestions.length} questions</span>
+                                <span className='px-4 py-1.5 bg-[#f8fafc] border border-[#d1d5db] text-[#6b7280] text-sm font-bold rounded-full w-max'>{report.technicalQuestions?.length || 0} questions</span>
                             </div>
                             <div className='flex flex-col'>
-                                {report.technicalQuestions.map((q, i) => (
+                                {report.technicalQuestions?.map((q, i) => (
                                     <QuestionCard key={i} item={q} index={i} />
                                 ))}
                             </div>
@@ -161,10 +157,10 @@ const Interview = () => {
                         <section className="animate-fadeIn">
                             <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-6 border-b border-[#f1f5f9] gap-4'>
                                 <h2 className="text-2xl sm:text-3xl font-bold text-black tracking-tight">Behavioral Questions</h2>
-                                <span className='px-4 py-1.5 bg-[#f8fafc] border border-[#d1d5db] text-[#6b7280] text-sm font-bold rounded-full w-max'>{report.behavioralQuestions.length} questions</span>
+                                <span className='px-4 py-1.5 bg-[#f8fafc] border border-[#d1d5db] text-[#6b7280] text-sm font-bold rounded-full w-max'>{report.behavioralQuestions?.length || 0} questions</span>
                             </div>
                             <div className='flex flex-col'>
-                                {report.behavioralQuestions.map((q, i) => (
+                                {report.behavioralQuestions?.map((q, i) => (
                                     <QuestionCard key={i} item={q} index={i} />
                                 ))}
                             </div>
@@ -175,10 +171,10 @@ const Interview = () => {
                         <section className="animate-fadeIn">
                             <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-6 border-b border-[#f1f5f9] gap-4'>
                                 <h2 className="text-2xl sm:text-3xl font-bold text-black tracking-tight">Preparation Road Map</h2>
-                                <span className='px-4 py-1.5 bg-[#f8fafc] border border-[#d1d5db] text-[#6b7280] text-sm font-bold rounded-full w-max'>{report.preparationPlan.length}-day plan</span>
+                                <span className='px-4 py-1.5 bg-[#f8fafc] border border-[#d1d5db] text-[#6b7280] text-sm font-bold rounded-full w-max'>{report.preparationPlan?.length || 0}-day plan</span>
                             </div>
                             <div className='mt-8 max-w-3xl ml-4'>
-                                {report.preparationPlan.map((day) => (
+                                {report.preparationPlan?.map((day) => (
                                     <RoadMapDay key={day.day} day={day} />
                                 ))}
                             </div>
