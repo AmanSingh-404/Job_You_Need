@@ -7,6 +7,7 @@ import { AuthProvider } from './features/auth/auth.context';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './features/interview/pages/Home';
 import Interview from './features/interview/pages/Interview';
+import Landing from './features/interview/pages/Landing';
 import { InterviewProvider } from './features/interview/interview.context';
 
 function App() {
@@ -14,26 +15,31 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <InterviewProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/interview/:interviewId"
-            element={
-              <ProtectedRoute>
-                <Interview />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+          <Routes>
+            {/* Public landing page */}
+            <Route path="/" element={<Landing />} />
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Authenticated routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/interview/:interviewId"
+              element={
+                <ProtectedRoute>
+                  <Interview />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </InterviewProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -21,7 +21,7 @@ const Register = () => {
     if (token) {
       console.log('Google login successful, passing token:', token);
       localStorage.setItem('token', token);
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [navigate]);
 

@@ -23,7 +23,7 @@ const Login = () => {
     if (token) {
       console.log('Google login successful, passing token:', token);
       localStorage.setItem('token', token);
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [navigate]);
 
@@ -39,7 +39,7 @@ const Login = () => {
       }, { withCredentials: true });
       console.log('Login successful', response.data);
       setUser(response.data.user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       console.error('Login error', err);
       setError(err.response?.data?.message || 'Failed to login. Please check your credentials.');
