@@ -41,7 +41,11 @@ async function registerUser(req, res) {
     {expiresIn: "29d"}
    )
 
-   res.cookie("token", token)
+   res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+   })
 
    res.status(201).json({
     message:"User Registered successfully",
@@ -85,7 +89,11 @@ async function loginUserController(req, res) {
         {expiresIn:"1d"}
     )
 
-    res.cookie("token", token)
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
+    })
 
     res.status(201).json({
         message:"User Logged in successfully",
@@ -112,7 +120,11 @@ async function logoutUserController(req, res) {
         })
     }
 
-    res.clearCookie("token")
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
+    })
     return res.status(200).json({
         message:"User Logged out successfully"
     })

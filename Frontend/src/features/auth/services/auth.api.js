@@ -28,8 +28,10 @@ export async function login({email, password}) {
 
 export async function logout() {
     try{
+        const token = localStorage.getItem('token');
         const response = await axios.get(`${BASE}/api/auth/logout`, {
-            withCredentials: true
+            withCredentials: true,
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
         })
         return response.data
     }
@@ -41,8 +43,10 @@ export async function logout() {
 
 export async function getMe() {
     try{
+        const token = localStorage.getItem('token');
         const response = await axios.get(`${BASE}/api/auth/me`, {
-            withCredentials: true
+            withCredentials: true,
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
         })
         return response.data
     }
