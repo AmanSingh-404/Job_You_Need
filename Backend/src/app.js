@@ -46,19 +46,39 @@ passport.use(new GoogleStrategy({
   callbackURL: `${process.env.BACKEND_URL || 'http://localhost:3000'}/auth/google/callback`,
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-    let user = await userModel.findOne({ email: profile.emails[0].value });
+    const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
+    if (!email) {
+      return done(new Error("No email found from Google profile"), null);
+    }
+
+    let user = await userModel.findOne({ email });
+    
     if (!user) {
+        // Find if username already exists to prevent E11000 duplicate key error
+        let baseUsername = profile.displayName || email.split('@')[0];
+        let username = baseUsername;
+        let userWithSameName = await userModel.findOne({ username });
+        let counter = 1;
+        while (userWithSameName) {
+            username = `${baseUsername}_${Math.floor(Math.random() * 10000)}`;
+            userWithSameName = await userModel.findOne({ username });
+            counter++;
+            if(counter > 10) break; // sanity safeguard
+        }
+
         user = await userModel.create({
-            username: profile.displayName || profile.emails[0].value.split('@')[0],
-            email: profile.emails[0].value,
+            username,
+            email,
             googleId: profile.id
         });
     } else if (!user.googleId) {
         user.googleId = profile.id;
         await user.save();
     }
+    
     return done(null, user);
   } catch (err) {
+    console.error("Google Auth Strategy Error:", err);
     return done(err, null);
   }
 }));
@@ -74,7 +94,7 @@ app.get('/auth/google/callback',
   (req, res) => {
     const token = jwt.sign(
       {
-        id: req.user._id,
+        id: req.user._id ? req.user._id.toString() : req.user.id,
         username: req.user.username
       },
       process.env.JWT_SECRET,
