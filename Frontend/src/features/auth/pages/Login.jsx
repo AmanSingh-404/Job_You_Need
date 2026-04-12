@@ -23,9 +23,10 @@ const Login = () => {
     if (token) {
       console.log('Google login successful, passing token:', token);
       localStorage.setItem('token', token);
-      navigate('/dashboard');
+      // Use window.location instead of navigate so the AuthContext re-fetches user with the new token
+      window.location.href = '/dashboard';
     }
-  }, [navigate]);
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
