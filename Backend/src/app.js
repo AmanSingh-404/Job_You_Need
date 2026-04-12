@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
+const userModel = require('./models/user.model');
 
 // routes
 const authRouter = require('./routes/auth.routes');
@@ -43,9 +44,23 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: `${process.env.BACKEND_URL || 'http://localhost:3000'}/auth/google/callback`,
-}, (accessToken, refreshToken, profile, done) => {
-  // Normally: find/create user in DB
-  return done(null, profile);
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    let user = await userModel.findOne({ email: profile.emails[0].value });
+    if (!user) {
+        user = await userModel.create({
+            username: profile.displayName || profile.emails[0].value.split('@')[0],
+            email: profile.emails[0].value,
+            googleId: profile.id
+        });
+    } else if (!user.googleId) {
+        user.googleId = profile.id;
+        await user.save();
+    }
+    return done(null, user);
+  } catch (err) {
+    return done(err, null);
+  }
 }));
 
 // Google login route
@@ -59,8 +74,8 @@ app.get('/auth/google/callback',
   (req, res) => {
     const token = jwt.sign(
       {
-        id: req.user.id,
-        displayName: req.user.displayName
+        id: req.user._id,
+        username: req.user.username
       },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
