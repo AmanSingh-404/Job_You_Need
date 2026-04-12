@@ -14,8 +14,22 @@ const interviewRouter = require('./routes/interview.routes');
 const app = express();
 
 // middlewares
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://job-you-need.vercel.app'
+];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -28,7 +42,7 @@ app.use(passport.initialize());
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback',
+  callbackURL: `${process.env.BACKEND_URL || 'http://localhost:3000'}/auth/google/callback`,
 }, (accessToken, refreshToken, profile, done) => {
   // Normally: find/create user in DB
   return done(null, profile);
@@ -53,7 +67,8 @@ app.get('/auth/google/callback',
     );
 
     res.cookie("token", token);
-    res.redirect(`http://localhost:5173/login?token=${token}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/login?token=${token}`);
   }
 );
 
