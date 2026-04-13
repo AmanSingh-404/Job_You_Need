@@ -25,8 +25,9 @@ if (process.env.FRONTEND_URL) {
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+    const cleanOrigin = origin ? origin.replace(/\/$/, '') : '';
+    if (!origin || allowedOrigins.includes(cleanOrigin) || cleanOrigin.endsWith('.vercel.app') || cleanOrigin === 'https://job-you-need.vercel.app') {
+      callback(null, origin || true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
@@ -114,6 +115,15 @@ app.get('/auth/google/callback',
 // ================= YOUR ROUTES =================
 app.use('/api/auth', authRouter);
 app.use('/api/interview', interviewRouter);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+    if (err.message === 'Not allowed by CORS') {
+         return res.status(403).json({ success: false, message: "CORS Error: Origin not allowed" });
+    }
+    console.error("Unhandled Error:", err);
+    res.status(500).json({ success: false, message: "Internal Server Error", error: err.message });
+});
 
 // export app
 module.exports = app;
